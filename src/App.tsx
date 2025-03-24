@@ -4,7 +4,8 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DragContextProvider } from './context/DragContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import DraggableGrid from './components/DraggableGrid';
-import { fetchData } from './services/apiService';
+import { fetchData, updateData } from './services/apiService';
+import DragOverlay from './components/DragOverlay';
 
 type RowData = {
   id: number;
@@ -31,12 +32,23 @@ const App: React.FC = () => {
     loadData();
   }, []);
 
-  const handleDropToTarget = (droppedRows: RowData[]) => {
-    setSourceGridData((prev) =>
-      prev.filter((row) => !droppedRows.some((droppedRow) => droppedRow.id === row.id))
+  const handleDropToTarget = async (droppedRows: RowData[]) => {
+    const updatedSourceGrid = sourceGridData.filter(
+      (row) => !droppedRows.some((droppedRow) => droppedRow.id === row.id)
     );
-    setTargetGridData((prev) => [...prev, ...droppedRows]);
+    const updatedTargetGrid = [...targetGridData, ...droppedRows];
+  
+    setSourceGridData(updatedSourceGrid);
+    setTargetGridData(updatedTargetGrid);
+  
+    // Persist the updated data to the API
+    try {
+      await updateData({ source: updatedSourceGrid, target: updatedTargetGrid });
+    } catch (error) {
+      console.error("Failed to save data:", error);
+    }
   };
+  
 
   const handleDropToSource = (droppedRows: RowData[]) => {
     setTargetGridData((prev) =>
@@ -48,6 +60,11 @@ const App: React.FC = () => {
   if (loading) {
     return <div>Loading data...</div>;
   }
+  
+  if (!sourceGridData.length && !targetGridData.length) {
+    return <div>Error loading data. Please try again later.</div>;
+  }
+  
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -55,6 +72,7 @@ const App: React.FC = () => {
         <ErrorBoundary>
           <div style={{ margin: '20px' }}>
             <h1>MUI Drag and Drop</h1>
+            <DragOverlay />
             <div style={{ display: 'flex', gap: '20px' }}>
               {/* Source Grid */}
               <DraggableGrid
@@ -67,6 +85,7 @@ const App: React.FC = () => {
                 gridData={targetGridData}
                 setGridData={setTargetGridData}
                 onDropRow={handleDropToTarget}
+                disablePaging={true} // Disable paging for the target grid
               />
             </div>
           </div>

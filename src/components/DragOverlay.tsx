@@ -3,6 +3,7 @@ import { useDragContext } from '../context/DragContext';
 
 const DragOverlay: React.FC = () => {
     const { draggedRows } = useDragContext();
+    console.log('Dragged Rows:', draggedRows.length);
 
     if (!draggedRows.length) return null;
 

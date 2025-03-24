@@ -12,6 +12,7 @@ type GridProps = {
     gridData: RowData[];
     setGridData: React.Dispatch<React.SetStateAction<RowData[]>>;
     onDropRow: (rows: RowData[]) => void;
+    disablePaging?: boolean;
 };
 
 const columns: GridColDef[] = [
@@ -19,7 +20,7 @@ const columns: GridColDef[] = [
     { field: 'name', headerName: 'Name', width: 150 },
 ];
 
-const DraggableGrid: React.FC<GridProps> = ({ gridData, onDropRow }) => {
+const DraggableGrid: React.FC<GridProps> = ({ gridData, onDropRow, disablePaging = false }) => {
     // Access dragged rows from context
     const { draggedRows, setDraggedRows } = useDragContext();
 
@@ -52,6 +53,30 @@ const DraggableGrid: React.FC<GridProps> = ({ gridData, onDropRow }) => {
         setDraggedRows(selectedRows); // Update the context with selected rows
     };
 
+    // Fallback UI for empty grid
+    if (!gridData || gridData.length === 0) {
+        return (
+            <div
+                ref={(node) => {
+                    dragRef(node);
+                    dropRef(node);
+                }} // Attach the drop zone functionality to this div
+                style={{
+                    height: 400,
+                    width: '100%',
+                    border: '1px dashed gray',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '16px',
+                    color: '#888',
+                }}
+            >
+                No data available
+            </div>
+        );
+    }
+
     return (
         <div
             ref={(node) => {
@@ -69,10 +94,10 @@ const DraggableGrid: React.FC<GridProps> = ({ gridData, onDropRow }) => {
             <DataGrid
                 rows={gridData} // Rows displayed in the grid
                 columns={columns} // Grid columns
-                paginationModel={paginationModel} // Pagination setup
-                onPaginationModelChange={setPaginationModel} // Update pagination on change
+                paginationModel={disablePaging ? undefined : paginationModel} // Enable paging only if not disabled
+                onPaginationModelChange={!disablePaging ? setPaginationModel : undefined} // Update pagination if enabled
                 checkboxSelection // Enable row selection via checkboxes
-                pageSizeOptions={[5, 10, 20]} // Dropdown for page size
+                pageSizeOptions={!disablePaging ? [5, 10, 20] : undefined} // Allow page size options only if paging is enabled
                 onRowSelectionModelChange={(selectionModel) =>
                     handleRowSelection(selectionModel as GridRowSelectionModel)
                 } // Handle row selection changes
