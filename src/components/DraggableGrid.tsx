@@ -8,16 +8,17 @@ import {
 import { useDrag, useDrop } from "react-dnd";
 import { useDragContext } from "../context/DragContext";
 
-type GridProps<T> = {
-    gridData: T[];
+type GridProps<T extends { id: number }> = {
+    gridData: T[]; // Generic data type
     setGridData: React.Dispatch<React.SetStateAction<T[]>>;
     onDropRow: (rows: T[]) => void;
     disablePaging?: boolean;
-};
+  };
 
 // The DraggableGrid component
 const DraggableGrid = <T extends { id: number }>({
     gridData,
+    setGridData, // Now receiving the state setter
     onDropRow,
     disablePaging = false,
 }: GridProps<T>) => {
@@ -41,8 +42,15 @@ const DraggableGrid = <T extends { id: number }>({
     const [, dropRef] = useDrop({
         accept: "ROW",
         drop: () => {
-            onDropRow(draggedRows); // Move only the selected rows Execute the external callback function
-            setDraggedRows([]); // Clear the dragged rows after dropping
+            const uniqueRows = draggedRows.filter(
+                (draggedRow) => !gridData.some((row) => row.id === draggedRow.id)
+            );
+            // Remove the moved rows from the source grid
+            setGridData((prev) =>
+                prev.filter((row) => !draggedRows.some((draggedRow) => draggedRow.id === row.id))
+            );
+            onDropRow(uniqueRows); // Handle the rows being dropped
+            setDraggedRows([]); // Clear dragged rows after dropping
         },
     });
 
