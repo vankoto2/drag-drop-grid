@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const [sourceGridData, setSourceGridData] = useState<RowData[]>([]);
   const [targetGridData, setTargetGridData] = useState<RowData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -24,7 +25,7 @@ const App: React.FC = () => {
         const data = await fetchData();
         setSourceGridData(data); // Fill the source grid with data from the server
       } catch (error) {
-        console.error('Error fetching data:', error);
+        setError("Critical Error: Failed to load data from the server."); // Unexpected error
       } finally {
         setLoading(false);
       }
@@ -42,7 +43,7 @@ const App: React.FC = () => {
 
       setSourceGridData(updatedSourceGrid);
       setTargetGridData(updatedTargetGrid);
-      
+
       // Persist the updated data to the API
       // try {
       //   await updateData({ source: updatedSourceGrid, target: updatedTargetGrid });
@@ -69,6 +70,10 @@ const App: React.FC = () => {
 
   if (loading) {
     return <div>Loading data...</div>;
+  }
+
+  if (error) {
+    return <div style={{ color: "red" }}>{error}</div>; // Display critical error visually
   }
 
   if (!sourceGridData.length && !targetGridData.length) {
