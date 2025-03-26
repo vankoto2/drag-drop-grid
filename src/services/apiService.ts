@@ -14,11 +14,11 @@ export const fetchData = async () => {
   }
 };
 
-export const updateData = async (data: any) => {
-  try {
-    await axios.put(API_URL, data);
-  } catch (error) {
-    console.error("API Update Error:", error);
-    throw error;
-  }
-};
+// export const updateData = async (data: any) => {
+//   try {
+//     await axios.put(API_URL, data);
+//   } catch (error) {
+//     console.error("API Update Error:", error);
+//     throw error;
+//   }
+// };

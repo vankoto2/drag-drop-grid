@@ -4,7 +4,8 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DragContextProvider } from './context/DragContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import DraggableGrid from './components/DraggableGrid';
-import { fetchData, updateData } from './services/apiService';
+// import { fetchData, updateData } from './services/apiService';
+import { fetchData } from './services/apiService';
 import DragOverlay from './components/DragOverlay';
 
 type RowData = {
@@ -42,11 +43,11 @@ const App: React.FC = () => {
     setTargetGridData(updatedTargetGrid);
   
     // Persist the updated data to the API
-    try {
-      await updateData({ source: updatedSourceGrid, target: updatedTargetGrid });
-    } catch (error) {
-      console.error("Failed to save data:", error);
-    }
+    // try {
+    //   await updateData({ source: updatedSourceGrid, target: updatedTargetGrid });
+    // } catch (error) {
+    //   console.error("Failed to save data:", error);
+    // }
   };
   
 
@@ -78,13 +79,13 @@ const App: React.FC = () => {
               <DraggableGrid
                 gridData={sourceGridData}
                 setGridData={setSourceGridData}
-                onDropRow={handleDropToSource}
+                onDropRow={handleDropToSource} // External callback function
               />
               {/* Target Grid */}
               <DraggableGrid
                 gridData={targetGridData}
                 setGridData={setTargetGridData}
-                onDropRow={handleDropToTarget}
+                onDropRow={handleDropToTarget} // External callback function
                 disablePaging={true} // Disable paging for the target grid
               />
             </div>
