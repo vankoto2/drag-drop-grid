@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DragContextProvider } from './context/DragContext';
@@ -33,39 +33,48 @@ const App: React.FC = () => {
     loadData();
   }, []);
 
-  const handleDropToTarget = async (droppedRows: RowData[]) => {
-    const updatedSourceGrid = sourceGridData.filter(
-      (row) => !droppedRows.some((droppedRow) => droppedRow.id === row.id)
-    );
-    const updatedTargetGrid = [...targetGridData, ...droppedRows];
-  
-    setSourceGridData(updatedSourceGrid);
-    setTargetGridData(updatedTargetGrid);
-  
-    // Persist the updated data to the API
-    // try {
-    //   await updateData({ source: updatedSourceGrid, target: updatedTargetGrid });
-    // } catch (error) {
-    //   console.error("Failed to save data:", error);
-    // }
-  };
-  
+  const handleDropToTarget = useCallback(
+    (droppedRows: RowData[]) => {
+      const updatedSourceGrid = sourceGridData.filter(
+        (row) => !droppedRows.some((droppedRow) => droppedRow.id === row.id)
+      );
+      const updatedTargetGrid = [...targetGridData, ...droppedRows];
 
-  const handleDropToSource = (droppedRows: RowData[]) => {
-    setTargetGridData((prev) =>
-      prev.filter((row) => !droppedRows.some((droppedRow) => droppedRow.id === row.id))
-    );
-    setSourceGridData((prev) => [...prev, ...droppedRows]);
-  };
+      setSourceGridData(updatedSourceGrid);
+      setTargetGridData(updatedTargetGrid);
+      
+      // Persist the updated data to the API
+      // try {
+      //   await updateData({ source: updatedSourceGrid, target: updatedTargetGrid });
+      // } catch (error) {
+      //   console.error("Failed to save data:", error);
+      // }
+    },
+    [sourceGridData, targetGridData]
+  );
+
+
+  const handleDropToSource = useCallback(
+    (droppedRows: RowData[]) => {
+      const updatedTargetGrid = targetGridData.filter(
+        (row) => !droppedRows.some((droppedRow) => droppedRow.id === row.id)
+      );
+      const updatedSourceGrid = [...sourceGridData, ...droppedRows];
+
+      setTargetGridData(updatedTargetGrid);
+      setSourceGridData(updatedSourceGrid);
+    },
+    [sourceGridData, targetGridData]
+  );
 
   if (loading) {
     return <div>Loading data...</div>;
   }
-  
+
   if (!sourceGridData.length && !targetGridData.length) {
     return <div>Error loading data. Please try again later.</div>;
   }
-  
+
 
   return (
     <DndProvider backend={HTML5Backend}>

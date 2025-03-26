@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
     DataGrid,
     GridColDef,
@@ -46,10 +46,23 @@ const DraggableGrid = <T extends { id: number }>({
         },
     });
 
-    const handleRowSelection = (selectionModel: GridRowSelectionModel) => {
-        const selectedRows = gridData.filter((row) => selectionModel.includes(row.id));
-        setDraggedRows(selectedRows); // Update dragged rows in the context
-    };
+    const handleRowSelection = useCallback(
+        (selectionModel: GridRowSelectionModel) => {
+            const selectedRows = gridData.filter((row) => selectionModel.includes(row.id));
+            setDraggedRows(selectedRows); // Update dragged rows in the context
+        },
+        [gridData, setDraggedRows]
+    );
+
+    const columns = useMemo(
+        () =>
+            Object.keys(gridData[0] || {}).map((key) => ({
+                field: key,
+                headerName: key.charAt(0).toUpperCase() + key.slice(1),
+                width: 150,
+            })),
+        [gridData]
+    );
 
     if (!gridData || gridData.length === 0) {
         return (
@@ -90,11 +103,7 @@ const DraggableGrid = <T extends { id: number }>({
         >
             <DataGrid
                 rows={gridData}
-                columns={Object.keys(gridData[0]).map((key) => ({
-                    field: key,
-                    headerName: key.charAt(0).toUpperCase() + key.slice(1),
-                    width: 150,
-                })) as GridColDef[]}
+                columns={columns as GridColDef[]}
                 paginationModel={disablePaging ? undefined : paginationModel}
                 onPaginationModelChange={!disablePaging ? setPaginationModel : undefined}
                 checkboxSelection
@@ -107,4 +116,4 @@ const DraggableGrid = <T extends { id: number }>({
     );
 };
 
-export default DraggableGrid;
+export default React.memo(DraggableGrid);
