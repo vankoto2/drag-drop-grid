@@ -63,22 +63,34 @@ const DraggableGrid = <T extends { id: number }>({
         [gridData, setDraggedRows]
     );
 
-    const columns: GridColDef[] = useMemo(
+    const moveRow = (dragIndex: number, hoverIndex: number) => {
+        const updatedRows = [...gridData];
+        const [movedRow] = updatedRows.splice(dragIndex, 1); // Remove the dragged row
+        updatedRows.splice(hoverIndex, 0, movedRow); // Insert it at the new position
+        setGridData(updatedRows); // Update the grid's state
+      };
+      
+
+      const columns: GridColDef[] = useMemo(
         () =>
-            Object.keys(gridData[0] || {}).map((key) => ({
-                field: key,
-                headerName: key.charAt(0).toUpperCase() + key.slice(1),
-                width: 150,
-                renderCell: (params) => {
-                    // Render the DraggableRow component for each row
-                    if (key === "id") {
-                        return <DraggableRow row={params.row} />;
-                    }
-                    return params.value; // Default rendering for other columns
-                },
-            })),
+          Object.keys(gridData[0] || {}).map((key) => ({
+            field: key,
+            headerName: key.charAt(0).toUpperCase() + key.slice(1),
+            width: 150,
+            renderCell: (params) => {
+                // Render the DraggableRow component for each row
+                if (key === "id") {
+                    return <DraggableRow
+                    row={params.row}
+                    index={gridData.indexOf(params.row)}
+                    moveRow={moveRow} // Pass moveRow to handle reordering
+                  />
+                }
+                return params.value; // Default rendering for other columns
+            },
+          })),
         [gridData]
-    );
+      );
 
     if (!gridData || gridData.length === 0) {
         return (
