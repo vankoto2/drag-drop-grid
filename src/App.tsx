@@ -4,7 +4,6 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DragContextProvider } from './context/DragContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import DraggableGrid from './components/DraggableGrid';
-import { fetchData } from './services/apiService';
 import DragOverlay from './components/DragOverlay';
 
 type RowData = {
@@ -21,9 +20,17 @@ const App: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await fetchData();
-        setSourceGridData(data); // Fill the source grid with data from the server
+          const sourceResponse = await fetch("http://localhost:3001/api/sourceGridData");
+          const targetResponse = await fetch("http://localhost:3001/api/targetGridData");
+    
+        const sourceData = await sourceResponse.json()
+        const targetData = await targetResponse.json()
+    
+        setSourceGridData(sourceData);
+        setTargetGridData(targetData);
       } catch (error) {
+        console.log(error);
+        
         setError("Critical Error: Failed to load data from the server."); // Unexpected error
       } finally {
         setLoading(false);
@@ -33,8 +40,25 @@ const App: React.FC = () => {
     loadData();
   }, []);
 
+  const updateSourceGridData = async (newData: any) => {
+    await fetch("http://localhost:3001/api/sourceGridData", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newData),
+      });;
+  };
+
+  const updateTargetGridData = async (newData: any) => {
+    await fetch("http://localhost:3001/api/targetGridData", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newData),
+    });
+  };
+
+
   const handleDropToTarget = useCallback(
-    (droppedRows: RowData[]) => {
+    async (droppedRows: RowData[]) => {
       const updatedSourceGrid = sourceGridData.filter(
         (row) => !droppedRows.some((droppedRow) => droppedRow.id === row.id)
       );
@@ -42,13 +66,17 @@ const App: React.FC = () => {
 
       setSourceGridData(updatedSourceGrid);
       setTargetGridData(updatedTargetGrid);
+
+      // Update the mock API
+      await updateSourceGridData(updatedSourceGrid);
+      await updateTargetGridData(updatedTargetGrid);
     },
     [sourceGridData, targetGridData]
   );
 
 
   const handleDropToSource = useCallback(
-    (droppedRows: RowData[]) => {
+    async (droppedRows: RowData[]) => {
       const updatedTargetGrid = targetGridData.filter(
         (row) => !droppedRows.some((droppedRow) => droppedRow.id === row.id)
       );
@@ -56,6 +84,10 @@ const App: React.FC = () => {
 
       setTargetGridData(updatedTargetGrid);
       setSourceGridData(updatedSourceGrid);
+
+      // Update the mock API
+      await updateSourceGridData(updatedSourceGrid);
+      await updateTargetGridData(updatedTargetGrid);
     },
     [sourceGridData, targetGridData]
   );
@@ -119,66 +151,66 @@ const App: React.FC = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-    <DragContextProvider>
-      <ErrorBoundary>
-        <div style={{
-          margin: '20px',
-          padding: '20px',
-          textAlign: "center",
-          fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-        }}>
-          <h1 style={{ marginBottom: '30px', color: '#2c3e50' }}>MUI Drag and Drop Grids</h1>
-          <DragOverlay />
+      <DragContextProvider>
+        <ErrorBoundary>
           <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '40px',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
+            margin: '20px',
+            padding: '20px',
+            textAlign: "center",
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
           }}>
-            {/* Source Grid */}
+            <h1 style={{ marginBottom: '30px', color: '#2c3e50' }}>MUI Drag and Drop Grids</h1>
+            <DragOverlay />
             <div style={{
-              width: '45%',
-              minWidth: '300px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-              borderRadius: '8px',
-              overflow: 'hidden',
-              border: '1px solid #ccc',
-              backgroundColor: '#ecf0f1',
-              padding: '20px',
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '40px',
+              justifyContent: 'center',
+              alignItems: 'flex-start',
             }}>
-              <h2 style={{ marginBottom: '10px', color: '#34495e' }}>Source Grid</h2>
-              <DraggableGrid
-                gridData={sourceGridData}
-                setGridData={setSourceGridData}
-                onDropRow={handleDropToSource} // External callback function
-              />
-            </div>
+              {/* Source Grid */}
+              <div style={{
+                width: '45%',
+                minWidth: '300px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                border: '1px solid #ccc',
+                backgroundColor: '#ecf0f1',
+                padding: '20px',
+              }}>
+                <h2 style={{ marginBottom: '10px', color: '#34495e' }}>Source Grid</h2>
+                <DraggableGrid
+                  gridData={sourceGridData}
+                  setGridData={setSourceGridData}
+                  onDropRow={handleDropToSource} // External callback function
+                />
+              </div>
 
-            {/* Target Grid */}
-            <div style={{
-              width: '45%',
-              minWidth: '300px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-              borderRadius: '8px',
-              overflow: 'hidden',
-              border: '1px solid #ccc',
-              backgroundColor: '#ecf0f1',
-              padding: '20px',
-            }}>
-              <h2 style={{ marginBottom: '10px', color: '#34495e' }}>Target Grid</h2>
-              <DraggableGrid
-                gridData={targetGridData}
-                setGridData={setTargetGridData}
-                onDropRow={handleDropToTarget} // External callback function
-                disablePaging={true} // Disable paging for the target grid
-              />
+              {/* Target Grid */}
+              <div style={{
+                width: '45%',
+                minWidth: '300px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                border: '1px solid #ccc',
+                backgroundColor: '#ecf0f1',
+                padding: '20px',
+              }}>
+                <h2 style={{ marginBottom: '10px', color: '#34495e' }}>Target Grid</h2>
+                <DraggableGrid
+                  gridData={targetGridData}
+                  setGridData={setTargetGridData}
+                  onDropRow={handleDropToTarget} // External callback function
+                  disablePaging={true} // Disable paging for the target grid
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </ErrorBoundary>
-    </DragContextProvider>
-  </DndProvider>
+        </ErrorBoundary>
+      </DragContextProvider>
+    </DndProvider>
   );
 };
 
