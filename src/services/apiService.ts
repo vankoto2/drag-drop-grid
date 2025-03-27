@@ -1,8 +1,7 @@
 import axios from "axios";
 
-console.log(import.meta.env.VITE_APP_API_URL);
-const API_URL = import.meta.env.VITE_APP_API_URL ;
-
+// const API_URL = import.meta.env.VITE_APP_API_URL ;
+const API_URL = "http://localhost:3001/data";
 
 export const fetchData = async () => {
   try {
@@ -13,12 +12,3 @@ export const fetchData = async () => {
     throw error;
   }
 };
-
-// export const updateData = async (data: any) => {
-//   try {
-//     await axios.put(API_URL, data);
-//   } catch (error) {
-//     console.error("API Update Error:", error);
-//     throw error;
-//   }
-// };
