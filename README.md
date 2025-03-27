@@ -1,54 +1,46 @@
-# React + TypeScript + Vite
+# Draggable Grid with MUI Data Grid and React DND
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+This project implements a generic drag-and-drop component built on the MUI Data Grid. Users can move rows between two tables or reorder rows within a single table. Data persistence and modification are handled via an API, and a dynamic drag preview provides an enhanced user experience.
 
-Currently, two official plugins are available:
+## Features
+- **Drag-and-Drop Functionality**: Move rows between tables or reorder them within the same table using `react-dnd`.
+- **API Integration**: Persist changes to data via API calls.
+- **Dynamic Preview**: Display an overlay of dragged rows with a badge showing the count of rows being moved.
+- **Paging Support**: Handle paginated data properly across multiple pages.
+- **State Management**: Use React Context API to manage the state of dragged rows.
+- **Error Handling**: Provide visual feedback for expected warnings and unexpected critical errors.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Technologies Used
+- **React**: TypeScript-based implementation for type safety.
+- **MUI Data Grid**: Interactive and customizable grid tables.
+- **React DND**: Drag-and-drop library for seamless row movement.
+- **API Integration**: Data persistence using a mock server (`json-server`).
+- **React Context API**: Manage global state for dragged rows.
+- **Testing**: Reliable tests using Jest and React Testing Library.
 
-## Expanding the ESLint configuration
+## Key Functionalities
+1. **Row Selection**:
+   - Select single or multiple rows within the grid.
+   - Drag them to another table or reorder within the same table.
+2. **Drag Preview**:
+   - Display the selected rows as an overlay.
+   - Show a badge indicating the total count of rows being dragged.
+3. **Paging Support**:
+   - Handle pagination when moving rows between grids.
+   - Disable paging in the target grid for easier row placement.
+4. **Edge Case Handling**:
+   - Handle scenarios like moving into empty grids.
+   - Prevent duplication of rows.
+5. **Processing After Drop**:
+   - Use callback functions to process actions after dropping rows.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Installation and Setup
+1. Install dependencies:
+### npm install
+2. Start the mock API server:
+### npx json-server --watch db.json --port 3001
+3. Start the development server:
+### npm start
+4. Run tests:
+### npm test

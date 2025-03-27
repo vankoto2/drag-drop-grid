@@ -47,15 +47,14 @@ const DraggableRow: React.FC<DraggableRowProps> = ({ row, index, moveRow }) => {
         style={{
           opacity: isDragging ? 0.5 : 1,
           cursor: "move",
-        //   padding: "8px",
-        //   border: "1px solid #ccc",
-        //   margin: "4px 0",
+          border: "1px solid #ccc",
           background: "white",
           borderRadius: "4px",
+          textAlign: "center",
         }}
       >
-        <strong>{row.id}</strong>
-      </div>
+      <strong>{row.id}</strong>
+    </div>
     </>
   );
 };

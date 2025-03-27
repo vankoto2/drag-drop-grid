@@ -68,29 +68,29 @@ const DraggableGrid = <T extends { id: number }>({
         const [movedRow] = updatedRows.splice(dragIndex, 1); // Remove the dragged row
         updatedRows.splice(hoverIndex, 0, movedRow); // Insert it at the new position
         setGridData(updatedRows); // Update the grid's state
-      };
-      
+    };
 
-      const columns: GridColDef[] = useMemo(
+
+    const columns: GridColDef[] = useMemo(
         () =>
-          Object.keys(gridData[0] || {}).map((key) => ({
-            field: key,
-            headerName: key.charAt(0).toUpperCase() + key.slice(1),
-            width: 150,
-            renderCell: (params) => {
-                // Render the DraggableRow component for each row
-                if (key === "id") {
-                    return <DraggableRow
-                    row={params.row}
-                    index={gridData.indexOf(params.row)}
-                    moveRow={moveRow} // Pass moveRow to handle reordering
-                  />
-                }
-                return params.value; // Default rendering for other columns
-            },
-          })),
+            Object.keys(gridData[0] || {}).map((key) => ({
+                field: key,
+                headerName: key.charAt(0).toUpperCase() + key.slice(1),
+                width: 150,
+                renderCell: (params) => {
+                    // Render the DraggableRow component for each row
+                    if (key === "id") {
+                        return <DraggableRow
+                            row={params.row}
+                            index={gridData.indexOf(params.row)}
+                            moveRow={moveRow} // Pass moveRow to handle reordering
+                        />
+                    }
+                    return params.value; // Default rendering for other columns
+                },
+            })),
         [gridData]
-      );
+    );
 
     if (!gridData || gridData.length === 0) {
         return (
@@ -100,17 +100,29 @@ const DraggableGrid = <T extends { id: number }>({
                     dropRef(node);
                 }}
                 style={{
-                    height: 400,
-                    width: "100%",
-                    border: "1px dashed gray",
                     display: "flex",
-                    alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "16px",
-                    color: "#888",
-                }}
-            >
-                No data available
+                    width: "100%",
+                    alignItems: "center",
+                    flexDirection: "column",
+                    height: "400px",
+                    border: "1px dashed gray",
+                    borderRadius: "8px",
+                    backgroundColor: "#f9f9f9",
+                    color: "#7f8c8d",
+                }}>
+                <svg
+                    style={{ marginBottom: "10px" }}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="64"
+                    height="64"
+                    fill="#7f8c8d"
+                    viewBox="0 0 24 24"
+                >
+                    <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm1-15h-2v2h2V7zm0 4h-2v6h2v-6z" />
+                </svg>
+                <h1>No Data Available</h1>
+                <p>There is currently no data to display. Please try again later.</p>
             </div>
         );
     }
