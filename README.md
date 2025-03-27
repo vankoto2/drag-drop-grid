@@ -15,7 +15,7 @@ This project implements a generic drag-and-drop component built on the MUI Data 
 - **React**: TypeScript-based implementation for type safety.
 - **MUI Data Grid**: Interactive and customizable grid tables.
 - **React DND**: Drag-and-drop library for seamless row movement.
-- **API Integration**: Data persistence using a mock server (`json-server`).
+- **API Integration**: ata persistence using a custom mock server built with Express.js and backed by a mock database (mockDb.js).
 - **React Context API**: Manage global state for dragged rows.
 - **Testing**: Reliable tests using Jest and React Testing Library.
 
@@ -39,8 +39,18 @@ This project implements a generic drag-and-drop component built on the MUI Data 
 1. Install dependencies:
 ### npm install
 2. Start the mock API server:
-### npx json-server --watch db.json --port 3001
+### node mockServer.js
+By default, the server will run at http://localhost:3001.
+
+Backend endpoints:
+
+GET /api/sourceGridData: Retrieve source grid data.
+
+PUT /api/sourceGridData: Update source grid data.
+
+GET /api/targetGridData: Retrieve target grid data.
+
+PUT /api/targetGridData: Update target grid data.
+
 3. Start the development server:
 ### npm start
-4. Run tests:
-### npm test
