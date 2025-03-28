@@ -53,4 +53,4 @@ GET /api/targetGridData: Retrieve target grid data.
 PUT /api/targetGridData: Update target grid data.
 
 3. Start the development server:
-### npm start
+### npm run dev
